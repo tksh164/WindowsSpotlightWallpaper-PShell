@@ -1,14 +1,6 @@
 ﻿[CmdletBinding()]
 param()
 
-function GetCurrentDesktopWallpaperImageFilePath
-{
-    $desktopWallpaperRegKey = Get-Item -LiteralPath 'Registry::HKEY_CURRENT_USER\Control Panel\Desktop'
-    $desktopWallpaperImageFilePath = $desktopWallpaperRegKey.GetValue('WallPaper')
-
-    $desktopWallpaperImageFilePath
-}
-
 function GetWindowsSpotlightLandscapeImageFilePath
 {
     # Get the registry key of landscapeImage value.
@@ -63,28 +55,16 @@ public class DesktopWallpaperHelper
 }
 
 
-# Get current desktop wallpaper image file path.
-$desktopWallpaperImageFilePath = GetCurrentDesktopWallpaperImageFilePath
-Write-Verbose -Message ('Current wallpaper image: {0}' -f $desktopWallpaperImageFilePath)
-
 # Get the Windows Spotlight landscape image file path.
 $windowsSpotlightImageFilePath = GetWindowsSpotlightLandscapeImageFilePath
 Write-Verbose -Message ('Windows Spotloght image: {0}' -f $windowsSpotlightImageFilePath)
 
-if ($desktopWallpaperImageFilePath -ne $windowsSpotlightImageFilePath)
+# Change the desktop background image.
+if (ChangeDesktopWallpaler -WallpaperIamgeFilePath $windowsSpotlightImageFilePath)
 {
-    Set-ItemProperty -LiteralPath $desktopWallpaperRegKey.PSPath -Name 'WallPaper' -Value $windowsSpotlightImageFilePath
-
-    if (ChangeDesktopWallpaler -WallpaperIamgeFilePath $windowsSpotlightImageFilePath)
-    {
-        Write-Verbose -Message 'Wallpaper changed to Windows Spotlight image.'
-    }
-    else
-    {
-        Write-Verbose -Message 'Failed change of wallpaper.'
-    }
+    Write-Verbose -Message 'Wallpaper changed to Windows Spotlight image.'
 }
 else
 {
-    Write-Verbose -Message 'Not need change because the image is same.'
+    Write-Verbose -Message 'Failed change of wallpaper.'
 }
